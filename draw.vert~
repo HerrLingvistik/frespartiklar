@@ -3,7 +3,7 @@
 in vec3 inPosition;
 
 uniform mat4 projectionMatrix;
-uniform mat4 modelViewMatrixg;
+uniform mat4 modelViewMatrix;
 
 //out position; 
 

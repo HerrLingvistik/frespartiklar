@@ -1,8 +1,11 @@
-// OpenGL 3 conversion 2013.
+	// OpenGL 3 conversion 2013.
 //gcc partiklar.c common/*.c common/Linux/MicroGlut.c -lGL -lX11 -lm -o partiklar -I common -I common/Linux
+
+//http://nullprogram.com/blog/2014/06/29/
 
 #include <stdlib.h>
 
+//Sebbe gör något jefligt konstigt
 
 #include <stdio.h>
 #include <math.h>
@@ -34,18 +37,26 @@
 #include "loadobj.h"
 #include "zpr.h"
 
+#define W 256
+#define H 256
+
 mat4 projectionMatrix;
 mat4 viewMatrix;
 GLfloat ratio;
 
-GLuint* drawShader, vertexArray, vertexBuffer;
+GLuint* drawShader, createShader, vertexArray, vertexBuffer;
 
+FBOstruct *fbo1, *fbo2;
 
 GLfloat vertices[] = {
 	-1.0f,0.0f,0.0f,
 	1.0f,0.0f,0.0f,
 	0.0f,1.0f,0.0f
 };
+
+void initTextures(){
+	
+}
 
 // Drawing routine
 void Display()
@@ -55,19 +66,25 @@ void Display()
 	glClearColor(0.1, 0.1, 0.3, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	// Enable Z-buffering
 	glEnable(GL_DEPTH_TEST);
 	// Enable backface culling
 	glEnable(GL_CULL_FACE);
+	// Enable Z-buffering
 	glCullFace(GL_BACK);
+
+	
 
 	glUseProgram(drawShader);
 	viewMatrix = lookAt(0,0,2, 0,0,0, 0,1,0);
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "modelViewMatrix"), 1, GL_TRUE, viewMatrix.m);
+
+	//första fbo
 	
-	glBindVertexArray(vertexArray);
 	
-	glDrawArrays(GL_TRIANGLES, 0, 3);	
+
+	//koppla shader - skapa partiklar
+
+	//sätta position
 
 	glFlush();
 	
@@ -87,7 +104,9 @@ void Init()
 	projectionMatrix = perspective(90, 1.0, 0.1, 1000); // It would be silly to upload an uninitialized matrix
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "modelViewMatrix"), 1, GL_TRUE, viewMatrix.m);
-	
+
+	createShader = loadShaders("createParts.vert", "createParts.frag");
+	printError("init shaders");
 	
 	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);
@@ -96,6 +115,13 @@ void Init()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(glGetAttribLocation(drawShader, "inPosition"), 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//fixa dose frame buffers
+	fbo1 = initFBO(W, H, 0);
+	fbo2 = initFBO(W, H, 0);
+
+	initTextures();
+
 }
 
 void Reshape(int h, int w)
@@ -117,7 +143,7 @@ int main(int argc, char *argv[])
 	glutInit(&argc, argv);
 	
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-	glutInitWindowSize(600, 600);
+	glutInitWindowSize(W,H);
 	
 	glutInitContextVersion(3, 2);
 	glutCreateWindow("Struta Hårt");
