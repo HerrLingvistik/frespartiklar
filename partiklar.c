@@ -48,14 +48,23 @@ GLfloat ratio;
 static GLfloat texStart[W][H][4];
 //static GLuint texName;
 
-GLuint drawShader, createShader, vertexArray, vertexBuffer;
+GLuint drawShader, createShader, vertArray, vertBuffer;
 
 FBOstruct *fbo1, *fbo2;
 
 GLfloat vertices[] = {
-	-1.0f,0.0f,0.0f,
-	1.0f,0.0f,0.0f,
-	0.0f,1.0f,0.0f
+		-1.0f, -1.0f, 0.0f,
+
+		1.0f,-1.0f,0.0f,
+		1.0f,1.0f,0.0f,
+
+
+     -1.0f,  1.0f, 0.0f,
+
+     -1.0f, -1.0f, 0.0f,
+
+ 		1.0f, 1.0f, 0.0f
+//         ÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖJJ. Schyssta LÖKAR!!!
 };
 
 FBOstruct *initFBOTex(){
@@ -126,33 +135,22 @@ void Display()
 	// Enable Z-buffering
 	glCullFace(GL_BACK);
 
-	
-  
+
 	glUseProgram(drawShader);
 	viewMatrix = lookAt(0,0,2, 0,0,0, 0,1,0);
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "modelViewMatrix"), 1, GL_TRUE, viewMatrix.m);
+	//glUniform1i(glGetUniformLocation(drawShader, "texUnit"), 0);
 
+
+	glBindVertexArray(vertArray);						//OBS DETTA SKA ANVÄNDAS. ANNARS BLIR DET SÄMST!!
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	//första fbo
-	
+	/*
 	useFBO(0L, fbo1, 0L);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
+	*/
 
-	//--------
-   glBegin(GL_QUADS);
-   glTexCoord2f(0.0, 0.0); glVertex3f(-2.0, -1.0, 0.0);
-   glTexCoord2f(0.0, 1.0); glVertex3f(-2.0, 1.0, 0.0);
-   glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 1.0, 0.0);
-   glTexCoord2f(1.0, 0.0); glVertex3f(0.0, -1.0, 0.0);
-
-   glTexCoord2f(0.0, 0.0); glVertex3f(1.0, -1.0, 0.0);
-   glTexCoord2f(0.0, 1.0); glVertex3f(1.0, 1.0, 0.0);
-   glTexCoord2f(1.0, 1.0); glVertex3f(2.41421, 1.0, -1.41421);
-   glTexCoord2f(1.0, 0.0); glVertex3f(2.41421, -1.0, -1.41421);
-   glEnd();
-   glFlush();
-   glDisable(GL_TEXTURE_2D);
-	//--------
 	//koppla shader - skapa partiklar
 
 	//sätta position
@@ -183,6 +181,17 @@ void Init()
 	projectionMatrix = perspective(90, 1.0, 0.1, 1000); // It would be silly to upload an uninitialized matrix
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "projectionMatrix"), 1, GL_TRUE, projectionMatrix.m);
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "modelViewMatrix"), 1, GL_TRUE, viewMatrix.m);
+
+
+
+
+	glGenVertexArrays(1, &vertArray);
+	glBindVertexArray(vertArray);
+	glGenBuffers(1, &vertBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertBuffer);	
+ 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(glGetAttribLocation(drawShader, "in_Position"), 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 }
 
