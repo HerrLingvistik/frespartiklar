@@ -44,7 +44,10 @@ mat4 projectionMatrix;
 mat4 viewMatrix;
 GLfloat ratio;
 
-GLuint* drawShader, createShader, vertexArray, vertexBuffer;
+//GLuint* drawShader, createShader, vertexArray, vertexBuffer;
+
+//Osäker på om dessa ska deklareras som pointers eller ej
+GLuint drawShader, createShader, vertexArray, vertexBuffer;
 
 FBOstruct *fbo1, *fbo2;
 
@@ -73,7 +76,7 @@ void Display()
 	glCullFace(GL_BACK);
 
 	
-
+  
 	glUseProgram(drawShader);
 	viewMatrix = lookAt(0,0,2, 0,0,0, 0,1,0);
 	glUniformMatrix4fv(glGetUniformLocation(drawShader, "modelViewMatrix"), 1, GL_TRUE, viewMatrix.m);

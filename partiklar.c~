@@ -44,7 +44,10 @@ mat4 projectionMatrix;
 mat4 viewMatrix;
 GLfloat ratio;
 
-GLuint* drawShader, createShader, vertexArray, vertexBuffer;
+//GLuint* drawShader, createShader, vertexArray, vertexBuffer;
+
+//Osäker på om dessa ska deklareras som pointers eller ej
+GLuint drawShader, createShader, vertexArray, vertexBuffer;
 
 FBOstruct *fbo1, *fbo2;
 
@@ -55,8 +58,7 @@ GLfloat vertices[] = {
 };
 
 void initTextures(){
-	printf("dase \n");
-	printf("%u \n\n", fbo2[]);
+	
 }
 
 // Drawing routine
