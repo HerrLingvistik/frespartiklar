@@ -5,5 +5,10 @@ uniform sampler2D texUnit;
 out vec4 outColor;
 
 void main(void){
-	
+	//använd position i texturen och uppdatera denna medelst 
+	vec2 pos = texture(texUnit, outTexCoord).rg;
+	vec2 vel = texture(texUnit, outTexCoord).ba;
+
+	outColor = 
+
 }
